@@ -46,7 +46,7 @@ namespace demod {
             ImGui::LeftLabel("AGC Attack");
             ImGui::SetNextItemWidth(menuWidth - ImGui::GetCursorPosX());
             if (ImGui::SliderFloat(("##_radio_cw_agc_attack_" + name).c_str(), &agcAttack, 1.0f, 200.0f)) {
-                demod.setAGCAttack(agcAttack / getIFSampleRate());
+                demod.setAGCAttack(agcAttack / getIFSampleRate(), agcAttack);
                 _config->acquire();
                 _config->conf[name][getName()]["agcAttack"] = agcAttack;
                 _config->release(true);

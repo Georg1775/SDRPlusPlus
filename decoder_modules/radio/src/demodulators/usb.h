@@ -43,7 +43,7 @@ namespace demod {
             ImGui::LeftLabel("AGC Attack");
             ImGui::SetNextItemWidth(menuWidth - ImGui::GetCursorPosX());
             if (ImGui::SliderFloat(("##_radio_usb_agc_attack_" + name).c_str(), &agcAttack, 1.0f, 200.0f)) {
-                demod.setAGCAttack(agcAttack / getIFSampleRate());
+                demod.setAGCAttack(agcAttack / getIFSampleRate(), agcAttack);
                 _config->acquire();
                 _config->conf[name][getName()]["agcAttack"] = agcAttack;
                 _config->release(true);
@@ -67,7 +67,7 @@ namespace demod {
         // ============= INFO =============
 
         const char* getName() { return "USB"; }
-        double getIFSampleRate() { return 24000.0; }
+        double getIFSampleRate() { return 32000.0; } //increased from 24000 to make it easier to demodulate DRM transmissions; matches SDR# now
         double getAFSampleRate() { return getIFSampleRate(); }
         double getDefaultBandwidth() { return 2800.0; }
         double getMinBandwidth() { return 500.0; }

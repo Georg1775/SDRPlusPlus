@@ -66,11 +66,11 @@ namespace dsp::demod {
             lpf.setTaps(lpfTaps);
         }
 
-        void setAGCAttack(double attack) {
+        void setAGCAttack(double attack, double attackRaw) {
             assert(base_type::_block_init);
             std::lock_guard<std::recursive_mutex> lck(base_type::ctrlMtx);
-            carrierAgc.setAttack(attack);
-            audioAgc.setAttack(attack);
+            carrierAgc.setAttack(attack, attackRaw);
+            audioAgc.setAttack(attack, attackRaw);
         }
 
         void setAGCDecay(double decay) {

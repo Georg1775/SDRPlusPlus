@@ -13,6 +13,7 @@ namespace dsp::loop {
         void init(stream<T>* in, double setPoint, double attack, double decay, double maxGain, double maxOutputAmp, double initGain = 1.0) {
             _setPoint = setPoint;
             _attack = attack;
+            _attackRaw = attack; //value directly from the slider
             _invAttack = 1.0f - _attack;
             _decay = decay;
             _invDecay = 1.0f - _decay;
@@ -29,10 +30,11 @@ namespace dsp::loop {
             _setPoint = setPoint;
         }
 
-        void setAttack(double attack) {
+        void setAttack(double attack, double attackRaw) {
             assert(base_type::_block_init);
             std::lock_guard<std::recursive_mutex> lck(base_type::ctrlMtx);
             _attack = attack;
+            _attackRaw = attackRaw; //value directly from the slider
             _invAttack = 1.0f - _attack;
         }
 
@@ -81,7 +83,8 @@ namespace dsp::loop {
                 // Update average amplitude
                 if (inAmp != 0.0f) {
                     amp = (inAmp > amp) ? ((amp * _invAttack) + (inAmp * _attack)) : ((amp * _invDecay) + (inAmp * _decay));
-                    gain = std::min<float>(_setPoint / amp, _maxGain);
+                    //use slider value as gain in case of _decay == 0
+                    gain = _decay > 0.0f ? std::min<float>(_setPoint / amp, _maxGain) : _attackRaw / 2.;
                 }
 
                 // If clipping is detected look ahead and correct
@@ -97,7 +100,8 @@ namespace dsp::loop {
                         if (inAmp > maxAmp) { maxAmp = inAmp; }
                     }
                     amp = maxAmp;
-                    gain = std::min<float>(_setPoint / amp, _maxGain);
+                    //use slider value as gain in case of _decay == 0
+                    gain = _decay > 0.0f ? std::min<float>(_setPoint / amp, _maxGain) : _attackRaw / 2.;
                 }
                 
                 // Scale output by gain
@@ -120,6 +124,7 @@ namespace dsp::loop {
     protected:
         float _setPoint;
         float _attack;
+        float _attackRaw;
         float _invAttack;
         float _decay;
         float _invDecay;

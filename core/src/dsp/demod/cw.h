@@ -35,10 +35,10 @@ namespace dsp::demod {
             xlator.setOffset(_tone, _samplerate);
         }
 
-        void setAGCAttack(double attack) {
+        void setAGCAttack(double attack, double attackRaw) {
             assert(base_type::_block_init);
             std::lock_guard<std::recursive_mutex> lck(base_type::ctrlMtx);
-            agc.setAttack(attack);
+            agc.setAttack(attack, attackRaw);
         }
 
         void setAGCDecay(double decay) {
